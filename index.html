@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心海空间</title>
+    <style>
+        /* Global Resets and Base Styles */
+        html {
+            scroll-behavior: smooth; /* Smooth scrolling for anchor links, not directly used here but good practice */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Oxygen,
+                         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            background-color: #f5f5f7; /* Apple's common light gray page background */
+            color: #1d1d1f; /* Apple's primary dark text color */
+            line-height: 1.5; /* Default line height for general text */
+        }
+
+        /* Page Container - wraps all content sections */
+        .page-container {
+            width: 100%;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        /* Common styling for main content blocks/sections */
+        .content-block {
+            background-color: #ffffff; /* White background for content blocks */
+            max-width: 900px; /* Constrained width for readability, common for Apple content */
+            margin: 0 auto clamp(30px, 5vh, 60px) auto; /* Centered, with vertical spacing */
+            padding: clamp(30px, 4vh, 50px) clamp(35px, 5vw, 60px); /* Responsive padding */
+            border-radius: 18px; /* Apple-like rounded corners */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06); /* Softer, more modern shadow */
+            box-sizing: border-box;
+        }
+        .content-block:first-child {
+             margin-top: clamp(30px, 5vh, 60px); /* Add top margin for the very first block */
+        }
+
+
+        /* Main Header Block */
+        .main-header {
+            display: flex;
+            align-items: center;
+            /* Inherits .content-block styles for background, padding, etc. */
+        }
+
+        .profile-image-wrapper img {
+            width: clamp(90px, 15vh, 150px); /* Responsive image size */
+            height: clamp(90px, 15vh, 150px);
+            border-radius: 50%; /* Circular image */
+            object-fit: cover;
+            margin-right: clamp(25px, 4vw, 40px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            border: 4px solid #f5f5f7; /* Subtle border matching page background for a "cutout" effect */
+        }
+
+        .title-wrapper h1 {
+            font-size: clamp(32px, 5vw, 56px); /* Large, responsive main title */
+            font-weight: 700; /* Bold for impact */
+            color: #1d1d1f;
+            margin: 0 0 0.15em 0;
+            line-height: 1.15;
+        }
+
+        .title-wrapper .subtitle {
+            font-size: clamp(18px, 2.5vw, 28px); /* Responsive subtitle */
+            font-weight: 400;
+            color: #6e6e73; /* Apple's secondary text color */
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        /* Section Specific Styles */
+        .content-section h2 {
+            font-size: clamp(24px, 3.5vw, 40px); /* Responsive section titles */
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-top: 0;
+            margin-bottom: clamp(20px, 3vh, 35px);
+            padding-bottom: clamp(10px, 1.5vh, 15px);
+            border-bottom: 1px solid #d2d2d7; /* Subtle separator line */
+            line-height: 1.25;
+        }
+
+        /* Styling for unordered lists (Personal Summary) */
+        .content-section ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .content-section li {
+            font-size: clamp(15px, 1.8vw, 19px);
+            color: #333333;
+            line-height: 1.7;
+            margin-bottom: clamp(10px, 1.5vh, 15px);
+            padding-left: 1.8em; /* Space for custom bullet */
+            position: relative;
+        }
+
+        .content-section li::before {
+            content: "•";
+            color: #007aff; /* Apple's vibrant blue for accents */
+            font-weight: bold;
+            font-size: 1.2em; /* Slightly larger bullet */
+            display: inline-block;
+            position: absolute;
+            left: 0.5em;
+            top: -0.05em; /* Fine-tune vertical alignment */
+        }
+
+        /* Styling for Project and Experience items */
+        .project, .experience {
+            margin-bottom: clamp(25px, 3.5vh, 40px);
+        }
+        .project:last-child, .experience:last-child {
+            margin-bottom: 0;
+        }
+
+        .project h3, .experience h3 {
+            font-size: clamp(18px, 2.2vw, 26px);
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-top: 0;
+            margin-bottom: 0.4em;
+            line-height: 1.35;
+        }
+
+        .role {
+            font-size: clamp(15px, 1.7vw, 19px);
+            font-weight: 500; /* Medium weight for emphasis */
+            color: #007aff;
+            margin-bottom: 0.7em;
+            display: block; /* Ensure it takes its own line if needed */
+        }
+
+        .description, .content-section p:not(.subtitle):not(.role) {
+            font-size: clamp(15px, 1.8vw, 19px);
+            color: #333333;
+            line-height: 1.7;
+            margin-top: 0;
+            margin-bottom: clamp(10px, 1.5vh, 15px);
+        }
+
+        /* Animation Styles - REVISED FOR PROGRESSIVE ENHANCEMENT */
+        .animate-on-scroll {
+            opacity: 1; /* Elements are visible by default */
+            transform: translateY(0); /* Default position */
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform; /* Performance hint for the browser */
+        }
+
+        /* Staggered animation for items within a list or group */
+        .animate-on-scroll.stagger-item {
+            transition-delay: calc(var(--stagger-index, 0) * 100ms);
+        }
+
+        /* Styles for My Band Section */
+        .band-photos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(10px, 2vw, 20px); /* Responsive gap */
+            justify-content: space-around; /* Distribute space */
+            margin-top: clamp(15px, 2.5vh, 25px);
+        }
+
+        .band-photos img {
+            max-width: 100%;
+            width: clamp(250px, 40vw, 350px); /* Responsive width with min/max */
+            height: auto;
+            object-fit: cover; /* Ensure images cover their area well */
+            border-radius: 12px; /* Consistent rounded corners */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+            flex: 1 1 300px; /* Flex properties for responsiveness */
+        }
+
+        /* Styles for My Hobbies Section - REVISED */
+        .my-hobbies .hobby-content {
+            display: flex;
+            justify-content: space-around; /* Distribute hobby cards */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: clamp(30px, 4vw, 50px); /* Gap between hobby items */
+            padding: 20px 0; /* Add some padding if images might extend */
+        }
+
+        .hobby-item {
+            /* Wrapper for stagger animation, its size is determined by hobby-card */
+        }
+
+        .hobby-card {
+            position: relative; /* Crucial for absolute positioning the image */
+            width: clamp(200px, 18vw, 240px); /* Responsive card size */
+            height: clamp(200px, 18vw, 240px);
+            border-radius: 25px; /* Softer, larger radius */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: visible; /* Allow image to slide outside card bounds */
+            color: #ffffff; /* Default text color for cards */
+        }
+
+        .hobby-card:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Distinct background colors for cards */
+        .hobby-badminton {
+            background: linear-gradient(135deg, #57BCF9 0%, #3A8EF4 100%);
+        }
+
+        .hobby-boardgames {
+            background: linear-gradient(135deg, #FFB347 0%, #FF8C42 100%);
+        }
+
+        .hobby-emoji {
+            font-size: clamp(4rem, 7vw, 5.5rem); /* Large emoji */
+            line-height: 1;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for emoji */
+        }
+
+        .hobby-name { /* Name of the hobby inside the card */
+            font-size: clamp(1.1rem, 1.5vw, 1.25rem);
+            font-weight: 500; /* Medium weight */
+            color: inherit; /* Inherits color from .hobby-card */
+        }
+
+        .hobby-image-onhover {
+            position: absolute;
+            width: 90%; /* Image size relative to card */
+            height: 90%;
+            border-radius: 20px; /* Rounded corners for the image */
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); /* Shadow for the revealed image */
+            
+            opacity: 0;
+            /* Initial state: centered behind card, scaled down */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.4);
+            transition: opacity 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), 
+                        transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1.03); /* Smooth 'appear' animation */
+            pointer-events: none; /* Image should not interfere with card hover */
+            z-index: -1; /* Positioned behind card content initially */
+        }
+
+        .hobby-card:hover .hobby-image-onhover {
+            opacity: 1;
+            /* Final state: slide out to a position (e.g., top-right of card) and scale up */
+            transform: translate(30%, -70%) scale(1); 
+            /* (X: 30% of card_width to right from center, Y: 70% of card_height up from center) */
+            z-index: 20; /* Bring image to the very front */
+        }
+        
+        /* Remove or comment out old hobby styles if they conflict */
+        /* For example, .hobby-entry, .hobby-entry p.description, .hobby-entry img, and its media query */
+        /* @media (min-width: 700px) { ... old styles ... } */
+
+        /* END of Styles for My Hobbies Section */
+
+        /* Styles for Contact Information Section */
+        .contact-info-content {
+            display: flex;
+            flex-direction: column; /* Stack items vertically by default */
+            align-items: center; /* Center items */
+            gap: clamp(25px, 4vh, 40px); /* Gap between contact items */
+            margin-top: clamp(15px, 2.5vh, 25px);
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center content within each item */
+            text-align: center;
+            width: 100%; /* Ensure items can take full width if needed */
+        }
+
+        .contact-item p.contact-label { /* Text like "微信名片:" or "我的主页:" */
+            font-size: clamp(15px, 1.8vw, 19px);
+            color: #333333;
+            line-height: 1.7;
+            margin-top: 0; /* Reset top margin */
+            margin-bottom: clamp(10px, 1.5vh, 15px);
+            font-weight: 500; /* Slightly bolder for labels */
+        }
+
+        .qr-code-img {
+            max-width: 100%;
+            width: clamp(180px, 30vw, 220px); /* Responsive QR code size */
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            object-fit: contain; /* Ensure QR code is fully visible */
+        }
+
+        .github-link {
+            font-size: clamp(16px, 2vw, 20px);
+            color: #007aff; /* Apple's vibrant blue for links */
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 18px;
+            border: 1.5px solid #007aff;
+            border-radius: 10px;
+            transition: background-color 0.2s ease-out, color 0.2s ease-out;
+            display: inline-block; /* To apply padding and border correctly */
+        }
+
+        .github-link:hover, .github-link:focus {
+            background-color: #007aff;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        /* Responsive adjustments for contact section */
+        @media (min-width: 768px) {
+            .contact-info-content {
+                flex-direction: row; /* Side-by-side on larger screens */
+                justify-content: space-around; /* Distribute space between items */
+                align-items: flex-start; /* Align items to the top */
+            }
+            .contact-item {
+                 flex: 1; /* Allow items to share space */
+                 max-width: 45%; /* Limit width when side-by-side */
+            }
+        }
+
+        /* 个人基本信息样式 */
+        .personal-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .personal-info .info-item {
+            font-size: clamp(14px, 1.5vw, 18px);
+            color: #6e6e73;
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+
+        .personal-info .info-item:first-child {
+            font-weight: 600;
+            color: #1d1d1f;
+            font-size: clamp(16px, 1.8vw, 20px);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="page-container">
+
+        <!-- Header Section -->
+        <header class="main-header content-block animate-on-scroll">
+            <div class="profile-image-wrapper">
+                <img src="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/353482AC-40BE-456F-AD0E-34A306707658_1_105_c.jpeg" alt="个人照片">
+            </div>
+            <div class="title-wrapper">
+                <h1>自我介绍</h1>
+                <p class="subtitle">光电专业一年级</p>
+                <div class="personal-info">
+                    <p class="info-item">龚海心</p>
+                    <p class="info-item">19356549416 | titicaine@163.com</p>
+                    <p class="info-item">微信：ChatGHX | QQ：3291053545</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Personal Summary Section -->
+        <section class="content-section personal-summary content-block animate-on-scroll">
+            <h2>个人总结</h2>
+            <ul>
+                <li class="animate-on-scroll stagger-item" style="--stagger-index: 1;">第一学期加权成绩86.75，位列班级30%</li>
+                <li class="animate-on-scroll stagger-item" style="--stagger-index: 2;">精通Python、C语言，有服务器部署、网站搭建经验。</li>
+                <li class="animate-on-scroll stagger-item" style="--stagger-index: 3;">擅长AI提示词工程，高代码/低代码的工作流程搭建，Agent工作流程搭建，编排层设计。</li>
+                <li class="animate-on-scroll stagger-item" style="--stagger-index: 4;">尝试过微调大语言模型，RAG知识库构建。</li>
+                <li class="animate-on-scroll stagger-item" style="--stagger-index: 5;">完成过深度学习与新能源器件开发结合的项目，在工作流、Agent、模型微调等方面亦有项目经验。</li>
+            </ul>
+        </section>
+
+        <!-- Project Experience Section -->
+        <section class="content-section project-experience content-block animate-on-scroll">
+            <h2>项目经历</h2>
+            <div class="project animate-on-scroll stagger-item" style="--stagger-index: 1;">
+                <h3>图神经网络预测电解液分子性质</h3>
+                <p class="role">项目总负责人</p>
+                <p class="description">
+                    负责数据处理，图神经网络算法设计，代码实现，网站平台搭建，部署服务器。
+                    利用边特征消息传递和图注意力网络层算法构建基于迁移学习的深度图卷积架构。
+                    输入的电解液分子SMILES表达式，通过分子节点和化学键的特征识别转化成张量后，输入到模型中，达到预测的效果。
+                    项目参与了挑战杯竞赛，项目进入校赛决赛。
+                </p>
+            </div>
+            <div class="project animate-on-scroll stagger-item" style="--stagger-index: 2;">
+                <h3>开发调模型文章写作智能体</h3>
+                <p class="role">独立开发者</p>
+                <p class="description">
+                    用ModelScope开源知识数据集，在GPUEZ云算力服务器训练DeepseekV3大模型，并在服务器上部署。
+                    将微调模型集成到智能体工作的一个模块，用于生成文章。
+                    用Python搭建写作Agent系统，获取订阅收益。
+                </p>
+            </div>
+        </section>
+
+        <!-- Organizational Experience Section -->
+        <section class="content-section organizational-experience content-block animate-on-scroll">
+            <h2>社团和组织经历</h2>
+            <div class="experience animate-on-scroll stagger-item" style="--stagger-index: 1;">
+                <h3>《通往AGI之路》分享演讲</h3>
+                <p class="role">演讲者</p>
+                <p class="description">
+                    在《通往AGI之路（Way To AGI）》AI切磋大会武汉分享会上台演讲分享AI知识，获得很好的反响。
+                </p>
+            </div>
+        </section>
+
+        <!-- My Band Section -->
+        <section class="content-section my-band content-block animate-on-scroll">
+            <h2>我的乐队</h2>
+            <div class="band-photos">
+                <img src="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/5F05269B-6A47-48BD-99D0-7AC5CEEF487A_1_105_c.jpeg" alt="乐队照片1" class="animate-on-scroll stagger-item" style="--stagger-index: 1;">
+                <img src="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/20250510151705911.png" alt="乐队照片2" class="animate-on-scroll stagger-item" style="--stagger-index: 2;">
+            </div>
+        </section>
+
+        <!-- My Hobbies Section -->
+        <section class="content-section my-hobbies content-block animate-on-scroll">
+            <h2>我的兴趣爱好</h2>
+            <div class="hobby-content">
+                <div class="hobby-item animate-on-scroll stagger-item" style="--stagger-index: 1;">
+                    <div class="hobby-card hobby-badminton">
+                        <span class="hobby-emoji">🏸</span>
+                        <p class="hobby-name">爱打羽毛球</p>
+                        <img src="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/BA20BB8F-9A42-4CE3-965F-236FEECAFB12_1_105_c.jpeg" alt="羽毛球照片" class="hobby-image-onhover">
+                    </div>
+                </div>
+                <div class="hobby-item animate-on-scroll stagger-item" style="--stagger-index: 2;">
+                    <div class="hobby-card hobby-boardgames">
+                        <span class="hobby-emoji">🎲</span>
+                        <p class="hobby-name">爱玩桌游</p>
+                        <img src="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/0788A5B9-650E-4AB1-ADC9-649933210322_1_105_c.jpeg" alt="桌游照片" class="hobby-image-onhover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Information Section -->
+        <section class="content-section contact-info content-block animate-on-scroll">
+            <h2>我的联系方式</h2>
+            <div class="contact-info-content">
+                <div class="contact-item animate-on-scroll stagger-item" style="--stagger-index: 1;">
+                    <p class="contact-label">微信名片:</p>
+                    <img src="https://hysinoss-1334037784.cos.ap-shanghai.myqcloud.com/20250510152136754.png" alt="微信名片二维码" class="qr-code-img">
+                </div>
+                <div class="contact-item animate-on-scroll stagger-item" style="--stagger-index: 2;">
+                    <p class="contact-label">我的主页:</p>
+                    <a href="https://github.com/Gonghysin" target="_blank" rel="noopener noreferrer" class="github-link">Github 主页</a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+            if (!animatedElements.length) return;
+
+            if ('IntersectionObserver' in window) {
+                // Prepare elements for animation by making them initially invisible/offset
+                animatedElements.forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(50px)';
+                });
+
+                const observer = new IntersectionObserver((entries, observerInstance) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            // Animate to visible state
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                            observerInstance.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.1
+                });
+
+                animatedElements.forEach(el => {
+                    observer.observe(el);
+                });
+            } else {
+                // IntersectionObserver not supported. Elements will remain visible
+                // as per the default CSS .animate-on-scroll styles (opacity: 1, transform: translateY(0)).
+                // No specific action needed here to make them visible, but we can ensure
+                // any programmatically set styles for hiding are cleared if necessary,
+                // though in this flow, they wouldn't have been set if IO is missing.
+                // For robustness, let's ensure they are fully visible if some other script manipulated them.
+                animatedElements.forEach(el => {
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
